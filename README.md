@@ -12,6 +12,7 @@ This project provides a user-friendly web interface for scraping data from websi
 - **Google Spreadsheet Integration**: Upload scraped data to a Google Spreadsheet.
 
 ## Getting Started
+https://taskcomp-2tqvpy8sfkixdeyuqyjyim.streamlit.app/
 
 ### Prerequisites
 
