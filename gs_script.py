@@ -1,18 +1,16 @@
 import csv
 import json
-import os
 
 import gspread
 import requests
 import streamlit as st
 from bs4 import BeautifulSoup
 
-from config import url
-
 
 class WebScraper:
-    def __init__(self, url):
+    def __init__(self, url, credentials_file):
         self.url = url
+        self.credentials_file = credentials_file
         if 'data' not in st.session_state:
             st.session_state.data = []
         self.data = st.session_state.data
@@ -49,7 +47,7 @@ class WebScraper:
                 writer.writerow([item['Name'], item['Role'], item['Img'], ', '.join(item['Social Links'])])
 
     def upload_to_google_spreadsheet(self, spreadsheet_name):
-        gc = gspread.service_account(filename=os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
+        gc = gspread.service_account(filename=self.credentials_file)
         sh = gc.open(spreadsheet_name).sheet1
         header = ['Name', 'Role', 'Img', 'Social Links']
         data = [header] + [[item['Name'], item['Role'], item['Img'],
@@ -58,7 +56,7 @@ class WebScraper:
 
 
 if __name__ == "__main__":
-    scraper = WebScraper(url)
+    scraper = WebScraper('https://interaction24.ixda.org/', 'creds.json')
     scraper.scrape_data()
     scraper.save_to_json('people_data.json')
     scraper.save_to_csv('people_data.csv')
