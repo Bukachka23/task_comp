@@ -9,9 +9,9 @@ from gs_script import WebScraper
 st.title('TEST_GSCRAPING')
 
 url = st.text_input('Enter the URL to scrape:', 'https://interaction24.ixda.org/')
-credentials_file = st.text_input('Enter the path to your Google credentials file:', 'creds.json')
 
-scraper = WebScraper(url, credentials_file)
+scraper = WebScraper(url)
+
 
 if st.button('Scrape Data'):
     scraper.scrape_data()

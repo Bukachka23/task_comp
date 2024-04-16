@@ -5,12 +5,12 @@ import gspread
 import requests
 import streamlit as st
 from bs4 import BeautifulSoup
+from google.oauth2.service_account import Credentials
 
 
 class WebScraper:
-    def __init__(self, url, credentials_file):
+    def __init__(self, url):
         self.url = url
-        self.credentials_file = credentials_file
         if 'data' not in st.session_state:
             st.session_state.data = []
         self.data = st.session_state.data
@@ -47,16 +47,32 @@ class WebScraper:
                 writer.writerow([item['Name'], item['Role'], item['Img'], ', '.join(item['Social Links'])])
 
     def upload_to_google_spreadsheet(self, spreadsheet_name):
-        gc = gspread.service_account(filename=self.credentials_file)
+        credentials = Credentials.from_service_account_info(
+                info={
+                    "type": st.secrets["type"],
+                    "project_id": st.secrets["project_id"],
+                    "private_key_id": st.secrets["private_key_id"],
+                    "private_key": st.secrets["private_key"],
+                    "client_email": st.secrets["client_email"],
+                    "client_id": st.secrets["client_id"],
+                    "auth_uri": st.secrets["auth_uri"],
+                    "token_uri": st.secrets["token_uri"],
+                    "auth_provider_x509_cert_url": st.secrets["auth_provider_x509_cert_url"],
+                    "client_x509_cert_url": st.secrets["client_x509_cert_url"],
+                    "universe_domain": st.secrets["universe_domain"]
+                }
+            )
+
+        gc = gspread.authorize(credentials)
         sh = gc.open(spreadsheet_name).sheet1
         header = ['Name', 'Role', 'Img', 'Social Links']
         data = [header] + [[item['Name'], item['Role'], item['Img'],
-                            ', '.join(item['Social Links'])] for item in self.data]
+                                ', '.join(item['Social Links'])] for item in self.data]
         sh.update('A1', data)
 
 
 if __name__ == "__main__":
-    scraper = WebScraper('https://interaction24.ixda.org/', 'creds.json')
+    scraper = WebScraper('https://interaction24.ixda.org/')
     scraper.scrape_data()
     scraper.save_to_json('people_data.json')
     scraper.save_to_csv('people_data.csv')
