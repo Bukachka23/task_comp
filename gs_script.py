@@ -1,10 +1,13 @@
 import csv
 import json
+import os
 
 import gspread
 import requests
 import streamlit as st
 from bs4 import BeautifulSoup
+
+from config import url
 
 
 class WebScraper:
