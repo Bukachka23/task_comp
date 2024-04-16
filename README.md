@@ -3,6 +3,7 @@
 This project provides a user-friendly web interface for scraping data from websites, displaying the scraped data, and allowing users to download it in JSON or CSV formats. Additionally, users can upload the scraped data directly to a Google Spreadsheet. Built with Streamlit, the application simplifies the process of web scraping, data visualization, and data export for users without deep technical knowledge.
 
 ## Demo deployed version
+https://taskcomp-2tqvpy8sfkixdeyuqyjyim.streamlit.app/
 
 ## Features
 
