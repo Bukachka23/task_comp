@@ -4,6 +4,7 @@ from io import StringIO
 
 import streamlit as st
 
+from config import get_credentials
 from gs_script import WebScraper
 
 st.title('TEST_GSCRAPING')
@@ -31,9 +32,15 @@ for item in scraper.data:
 if st.download_button('Download CSV', csv_string.getvalue(), "text/csv", "people_data.csv"):
     st.success('Data saved to CSV file successfully!')
 
+
+credentials = get_credentials()
+
 if st.button('Upload Data to Google Spreadsheet'):
-    scraper.upload_to_google_spreadsheet('task_scraping')
-    st.success('Data uploaded to Google Spreadsheet successfully!')
+    if credentials is not None:
+        scraper.upload_to_google_spreadsheet('task_scraping', credentials)
+        st.success('Data uploaded to Google Spreadsheet successfully!')
+    else:
+        st.error('Credentials not set or file not found.')
 
 st.write('''
     <a target="_self" href="https://docs.google.com/spreadsheets/d/1m1w7L36x0wbPXCcZvLndiwnETEGRLDnTLFzWYP8if_Y/edit?usp=sharing">

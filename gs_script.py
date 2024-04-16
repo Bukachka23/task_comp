@@ -46,28 +46,12 @@ class WebScraper:
             for item in self.data:
                 writer.writerow([item['Name'], item['Role'], item['Img'], ', '.join(item['Social Links'])])
 
-    def upload_to_google_spreadsheet(self, spreadsheet_name):
-        credentials = Credentials.from_service_account_info(
-                info={
-                    "type": st.secrets["type"],
-                    "project_id": st.secrets["project_id"],
-                    "private_key_id": st.secrets["private_key_id"],
-                    "private_key": st.secrets["private_key"],
-                    "client_email": st.secrets["client_email"],
-                    "client_id": st.secrets["client_id"],
-                    "auth_uri": st.secrets["auth_uri"],
-                    "token_uri": st.secrets["token_uri"],
-                    "auth_provider_x509_cert_url": st.secrets["auth_provider_x509_cert_url"],
-                    "client_x509_cert_url": st.secrets["client_x509_cert_url"],
-                    "universe_domain": st.secrets["universe_domain"]
-                }
-            )
-
+    def upload_to_google_spreadsheet(self, spreadsheet_name, credentials):
         gc = gspread.authorize(credentials)
         sh = gc.open(spreadsheet_name).sheet1
         header = ['Name', 'Role', 'Img', 'Social Links']
         data = [header] + [[item['Name'], item['Role'], item['Img'],
-                                ', '.join(item['Social Links'])] for item in self.data]
+                            ', '.join(item['Social Links'])] for item in self.data]
         sh.update('A1', data)
 
 
@@ -76,4 +60,18 @@ if __name__ == "__main__":
     scraper.scrape_data()
     scraper.save_to_json('people_data.json')
     scraper.save_to_csv('people_data.csv')
-    scraper.upload_to_google_spreadsheet('task_scraping')
+    credentials = Credentials.from_service_account_info(
+        info={
+            "type": "service_account",
+            "project_id": "your_project_id",
+            "private_key_id": "your_private_key_id",
+            "private_key": "your_private_key",
+            "client_email": "your_client_email",
+            "client_id": "your_client_id",
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_x509_cert_url": "your_client_x509_cert_url"
+        }
+    )
+    scraper.upload_to_google_spreadsheet('task_scraping', credentials)
